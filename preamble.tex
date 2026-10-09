@@ -1,0 +1,171 @@
+\hypersetup{unicode}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{lmodern}
+\usepackage[croatian]{babel}
+\usepackage{csquotes}
+\MakeOuterQuote{"}
+
+\usepackage{thmtools}
+
+\declaretheorem{teorem}
+\declaretheorem[sibling=teorem, style=plain]{lema}
+\declaretheorem[style=remark, sibling=teorem]{napomena}
+\declaretheorem[style=remark, sibling=teorem]{komentar}
+\declaretheorem[style=definition, sibling=teorem]{definicija}
+\declaretheorem[sibling=teorem]{korolar}
+\declaretheorem[style=remark, sibling=teorem]{zadatak}
+\declaretheorem[sibling=teorem]{propozicija}
+\declaretheorem[style = example]{primjer}
+
+\usepackage[style=numeric, sorting=none, giveninits]{biblatex}
+\addbibresource{literatura-prez.bib}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\newcommand{\midarrow}{\tikz \draw[-triangle 90] (0,0) -- +(.1,0);}
+
+\definecolor{nixblue}{HTML}{5277C3}
+\definecolor{nixviolet}{HTML}{7C6BC4}
+\definecolor{nixlight}{HTML}{7EBAE4}
+\definecolor{white}{HTML}{ffffff}
+\definecolor{black}{HTML}{000000}
+\definecolor{lblack}{HTML}{222222}
+
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamercolor{structure}{fg=nixblue}
+\setbeamercolor{frametitle}{bg=nixblue, fg=white}
+\setbeamercolor{palette primary}{bg=nixblue, fg=white}
+\setbeamercolor{palette secondary}{bg=nixblue, fg=white}
+\setbeamercolor{palette tertiary}{bg=nixblue, fg=white}
+\setbeamercolor{palette quaternary}{bg=nixblue, fg=white}
+\setbeamertemplate{navigation symbols}{}
+
+\usepackage{listings}
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{white},
+	commentstyle=\color{nixviolet},
+	keywordstyle=\color{nixblue},
+	stringstyle=\color{nixviolet},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	keepspaces=true,
+	numbers=none,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	tabsize=2
+}
+\lstdefinelanguage{nix}{
+	keywords={let, in, with, rec, inherit, import, if, then, else, assert, true, false, null},
+	sensitive=true,
+	comment=[l]{\#},
+	morecomment=[s]{/*}{*/}
+}
+\lstset{
+	style=mystyle,
+	extendedchars=true,
+	literate={→}{{\textrightarrow}}1 {←}{{\textleftarrow}}1
+	         {↓}{{\textdownarrow}}1 {↑}{{\textuparrow}}1
+	         {ć}{{\'c}}1 {č}{{\v c}}1 {š}{{\v s}}1 {ž}{{\v z}}1 {đ}{{\dj}}1
+	         {Ć}{{\'C}}1 {Č}{{\v C}}1 {Š}{{\v S}}1 {Ž}{{\v Z}}1 {Đ}{{\DJ}}1
+}
+
+\usepackage{booktabs}
+\usepackage{array}
+
+\renewcommand{\mathrm}[1]{\mathsf{#1}}
+\newcommand{\ub}{\rightarrow \infty}
+\newcommand{\un}{\rightarrow 0}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\dotnorm}{\left\lVert \, \cdot \, \right\rVert}
+\newcommand{\given}{\, \vert \,}
+\newcommand{\st}{\, \colon \,}
+\newcommand{\D}{\,\mathrm d}
+\newcommand{\ani}{{^\perp}}
+\newcommand{\ran}{\mathrm{ran}\,}
+\newcommand{\bop}{\mathrm{B}}
+\newcommand{\skp}[2]{\left\langle {#1}, {#2}  \right\rangle}
+\newcommand{\jpod}{\stackrel{\mathrm d}{=}}
+\newcommand{\jgs}{\stackrel{\mathrm{g.s.}}{=\joinrel=}}
+\newcommand{\stackrell}[2]{\stackrel{\scriptstyle {#1}}{#2}}
+\newcommand{\konvp}{\stackrel{\mathbb P}{\longrightarrow}}
+\newcommand{\konvw}{\stackrel{\mathrm w}{\longrightarrow}}
+\newcommand{\konvd}{\stackrel{\mathrm d}{\longrightarrow}}
+\newcommand{\konvgs}{\stackrel{\mathrm{g.s.}}{\longrightarrow}}
+\DeclareMathOperator{\card}{card}
+\DeclareMathOperator{\var}{Var}
+\DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\olspan}{\overline{span}}
+\DeclareMathOperator{\re}{Re}
+\DeclareMathOperator{\sgn}{sgn}
+
+\newcommand{\ol}[1]{\overline{#1}}
+\newcommand{\wh}[1]{\widehat{#1}}
+\newcommand{\wt}[1]{\widetilde{#1}}
+\renewcommand{\th}[1]{\hat{#1}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\C}{\mathbb{C}}
+\renewcommand{\P}{\mathbb{P}}
+\newcommand{\Ptrans}{\P}
+\newcommand{\E}{\mathbb{E}}
+\def\B{\mathrm{B}}
+\def\K{\mathrm{K}}
+\def\M{\mathrm{M}}
+\def\CC{\mathrm{C}}
+\def\RR{\mathrm{R}}
+\def\H{\mathcal{H}}
+\def\K{\mathcal{K}}
+\def\S{\mathcal{S}}
+\def\T{\mathcal{T}}
+\def\U{\mathcal{U}}
+
+\newcommand{\cz}{Calder\' on--Zygmund}
+\newcommand{\holder}{H\" older}
+\newcommand{\cadlag}{c\` adl\` ag}
+\newcommand{\levy}{L\' evy}
+\newcommand{\ito}{It\= o}
+\newcommand{\dnorm}{\norm{\, \cdot \,}}
+\newcommand{\mathgs}{\ \ \mathrm{g.s.}}
+\def\L{\mathrm{L}}
+\def\w{\mathrm{w}}
+\def\mrC{\mathrm{C}}
+\def\mrc{\mathrm{c}}
+\newcommand{\abs}[1]{\left| {#1} \right|}
+\newcommand{\advisor}{Voditelj rada: prof.\ dr.\ sc.\ Nikola Sandrić}
+
+\newcommand{\pitanje}[1]{%
+	\begin{center}
+		\vspace{1.2em}
+		{\Large\itshape\usebeamercolor[fg]{structure}#1}
+	\end{center}
+}
+
+\newcommand{\demo}[1]{%
+	\begin{center}
+		\vspace{0.8em}
+		{\small\textcolor{nixblue}{\textsc{demo}}\quad\itshape\textcolor{black!70}{#1}}
+	\end{center}
+}
+
+\let\etoolboxforlistloop\forlistloop
+\usepackage{autonum}
+\let\forlistloop\etoolboxforlistloop
+
+\usepackage{enumitem}
+\setitemize{label=\usebeamerfont*{itemize item}%
+    \usebeamercolor[fg]{itemize item}
+    \usebeamertemplate{itemize item}}
+\makeatletter
+\providecommand*{\blx@noerroretextools}{}
+\makeatother
