@@ -1,0 +1,76 @@
+:root {
+  color-scheme: light dark;
+  --background: #faf9f6;
+  --foreground: #252b32;
+  --muted: #58616b;
+  --link: #225b88;
+  --border: #ccd3d9;
+  --code-background: #edf0f3;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-padding-top: 1rem; }
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font: 1.08rem/1.75 system-ui, sans-serif;
+  overflow-wrap: break-word;
+}
+
+header, main, footer {
+  width: min(100% - 2.5rem, 52rem);
+  margin-inline: auto;
+}
+
+header { padding-block: 1.5rem; border-bottom: 1px solid var(--border); }
+nav { display: flex; flex-wrap: wrap; gap: .6rem 1.5rem; }
+main { padding-block: 1.5rem 3rem; }
+footer { padding-block: 1.5rem; border-top: 1px solid var(--border); color: var(--muted); font-size: .9rem; }
+
+h1, h2, h3 { line-height: 1.25; }
+h1 { font-size: clamp(2rem, 5vw, 2.8rem); letter-spacing: -.025em; }
+h2 { margin-top: 2.5rem; font-size: 1.7rem; }
+p, ul, ol { margin-block: 1.2rem; }
+li { margin-block: .6rem; }
+a { color: var(--link); text-underline-offset: .2em; }
+a:hover { text-decoration-thickness: .15em; }
+a[aria-current="page"] { font-weight: 700; }
+a:focus-visible { outline: 3px solid var(--link); outline-offset: 4px; }
+
+blockquote {
+  margin-inline: 0;
+  padding-left: 1.25rem;
+  border-left: 3px solid var(--link);
+  font-style: italic;
+}
+
+code { font-size: .9em; background: var(--code-background); padding: .15em .3em; border-radius: .2rem; }
+pre { overflow-x: auto; padding: 1rem; background: var(--code-background); border-radius: .3rem; }
+pre code { padding: 0; }
+table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
+th, td { border: 1px solid var(--border); padding: .6rem .8rem; text-align: left; }
+
+.skip-link { position: absolute; top: -6rem; left: 1rem; padding: .5rem; background: var(--background); }
+.skip-link:focus { top: 1rem; }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #171b20;
+    --foreground: #e5e9ed;
+    --muted: #b6bec7;
+    --link: #8fc9f2;
+    --border: #48515b;
+    --code-background: #252d36;
+  }
+}
+
+@media print {
+  :root { color-scheme: light; --background: white; --foreground: black; --link: black; --code-background: #eee; }
+  header, footer, .skip-link { display: none; }
+  main { width: 100%; padding: 0; }
+  body { font-size: 11pt; }
+  pre { white-space: pre-wrap; }
+}

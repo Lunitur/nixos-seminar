@@ -1,0 +1,375 @@
+\documentclass{beamer}
+
+\input{preamble.tex}
+
+\title[Deklarativni operacijski sustavi]
+{Deklarativni operacijski sustavi \\
+Seminar}
+\author[Karlo Pušelj]{Karlo Pušelj}
+\institute[PMF--MO]{Prirodoslovno-matematički fakultet --- Matematički odsjek\\Sveučilište u Zagrebu}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}[plain]
+	\titlepage
+\end{frame}
+
+\begin{frame}{Sadržaj}
+	\tableofcontents
+\end{frame}
+
+\section{Uvod}
+
+\begin{frame}{Motivacija}
+	\pitanje{Što nakon kvara računala?}
+\end{frame}
+
+\begin{frame}{Imperativni i deklarativni pristup}
+	\vskip25pt
+	{\small
+		\renewcommand{\arraystretch}{1.3}
+		\begin{tabular}{>{\raggedright\arraybackslash}p{5.0cm} >{\raggedright\arraybackslash}p{5.0cm}}
+			\toprule
+			\textbf{Imperativni pristup}                                  & \textbf{Deklarativni pristup}             \\
+			\midrule
+			\enquote{Instaliraj SSH pa uključi servis.}                   & \enquote{SSH servis treba biti uključen.} \\
+			Pamtimo što smo napravili.                                    & Zapisujemo što želimo imati.              \\
+			Rezultat ovisi o početnom stanju i njegovim transformacijama. & Alat iz opisa priprema konfiguraciju.     \\
+			\bottomrule
+		\end{tabular}}
+\end{frame}
+
+\begin{frame}[fragile]{Kako to izgleda u NixOS-u?}
+	\begin{lstlisting}[language=nix]
+{
+  services.openssh.enable = true;
+}
+\end{lstlisting}
+	\begin{itemize}
+		\item socijalni element: datoteku možemo čuvati u Git repozitoriju i dijeliti s drugima
+	\end{itemize}
+\end{frame}
+
+\section{Kratki izlet u prošlost}
+
+\begin{frame}{Kratki izlet u prošlost}
+	\pitanje{Kako su tržišni i licencni odnosi oblikovali razvoj softvera?}
+
+	\begin{itemize}
+		\item konkurentski proizvođači UNIX-a razvijali su nekompatibilne varijante sustava \textrightarrow{} fragmentacija
+		\item vlasničke licence ograničavaju dijeljenje i preraspodjelu softvera
+		\item komercijalizacija sistemskog softvera narušava suradnju među programerima
+	\end{itemize}
+
+	\vfill
+	{\scriptsize Izvor: \emph{The Open Group --- povijest UNIX-a} \cite{unix-history}; \emph{Richard Stallman --- GNU Manifest (1985.)} \cite{gnu-manifesto}}
+\end{frame}
+
+\section{Upravitelji paketa}
+
+\begin{frame}{Upravitelji paketa}
+	\pitanje{Što je upravitelj paketa?}
+\end{frame}
+
+\begin{frame}[fragile]{Što je upravitelj paketa?}
+	Alat koji instalira, nadograđuje i uklanja softverske pakete te prati njihove ovisnosti.
+
+	\vspace{0.5em}
+	\begin{lstlisting}
+aplikacija → biblioteka → druga biblioteka
+\end{lstlisting}
+
+	\begin{itemize}
+		\item primjeri: \textbf{APT}, \textbf{DNF}, \textbf{pacman}
+		\item paket sadrži datoteke programa i metapodatke
+		\item ovisnosti opisuju što je programu potrebno za rad
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Gdje tradicionalni model počne pucati?}
+	\begin{itemize}
+		\item višestruke verzije paketa ne mogu koegzistirati \textrightarrow{} \enquote{DLL hell}
+		\item nadogradnje nisu atomičke
+		\item nedostatak predvidljivosti
+		\item nedostatak pratljivosti
+		\item gradnja paketa je ovisna o stanju sustava \textrightarrow{} skrivene ovisnosti
+		\item problemi s ažuriranjem korisnički modificiranih komponenti
+	\end{itemize}
+\end{frame}
+
+\section{Nix, Nixpkgs i NixOS}
+
+\begin{frame}{Nix, Nixpkgs i NixOS}
+	\vskip25pt
+	\centering
+	{\renewcommand{\arraystretch}{1.3}
+		\begin{tabular}{@{}l >{\raggedright\arraybackslash}p{8.0cm}@{}}
+			\toprule
+			\textbf{Naziv}   & \textbf{Što označava?}                                                  \\
+			\midrule
+			\textbf{Nix}     & Upravitelj paketa i sustav gradnje; također naziv jezika za opise.      \\
+			\textbf{Nixpkgs} & Zbirka opisa paketa i biblioteka za rad s njima.                        \\
+			\textbf{NixOS}   & Linux distribucija koja Nix koristi za izgradnju konfiguracije sustava. \\
+			\bottomrule
+		\end{tabular}}
+\end{frame}
+
+\begin{frame}[fragile]{Temelj Nix-a: Nix store}
+	\begin{lstlisting}
+/nix/store/<hash-A>-biblioteka-1.0/
+/nix/store/<hash-B>-biblioteka-2.0/
+
+program A → biblioteka-1.0
+program B → biblioteka-2.0
+\end{lstlisting}
+	\begin{itemize}
+		\item paketi se spremaju pod zasebne putanje u \texttt{/nix/store}
+		\item postojeći rezultati gradnje ne mijenjaju se pri nadogradnji
+		\item različite verzije i varijante mogu koegzistirati
+	\end{itemize}
+\end{frame}
+
+\section{Derivacije i determinizam}
+
+\begin{frame}[fragile]{Derivacije}
+	\begin{lstlisting}
+izvorni kod + ovisnosti + alat i upute za gradnju
+                        ↓
+                    derivacija
+                        ↓
+                 rezultat u storeu
+\end{lstlisting}
+	\begin{itemize}
+		\item derivacija opisuje konkretan postupak gradnje i njegove ulaze
+		\item ovisnosti zajedno tvore graf gradnje
+		\item "binarna pričuvna memorija"
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Postoji li ispravan redoslijed gradnje?}
+	Modeliramo gradnju konačnim usmjerenim grafom $G = (V, E)$:
+	\begin{itemize}
+		\item vrh predstavlja korak gradnje
+		\item brid $u \to v$ znači da gradnja $v$ treba rezultat gradnje $u$
+	\end{itemize}
+
+	\vspace{0.4em}
+	\textbf{Teorem o topološkom poretku.} Konačan usmjeren graf ima topološki poredak ako i samo ako nema usmjerenih ciklusa.
+
+	Topološki poredak je niz svih vrhova $v_1, \ldots, v_n$ takav da
+	\[ v_i \to v_j \;\Longrightarrow\; i < j. \]
+
+	\begin{itemize}
+		\item svaku ovisnost možemo izgraditi prije paketa koji je koristi
+		\item poredak ne mora biti jedinstven
+	\end{itemize}
+
+	\vfill
+	{\scriptsize Izvor: \emph{Cornell --- topološki poredak} \cite{cornell-topological-sort}}
+\end{frame}
+
+\begin{frame}{Skica dokaza}
+	Dokazujemo indukcijom po broju vrhova:
+	\begin{itemize}
+		\item[1.] prazan graf ima trivijalan poredak
+		\item[2.] svaki neprazan konačan aciklički graf ima vrh bez ulaznih bridova; u suprotnom bismo neprestanim praćenjem prethodnika zbog konačnosti ponovili vrh i dobili ciklus
+		\item[3.] odaberemo takav vrh $v$ i uklonimo ga; preostali graf i dalje je acikličan pa po indukcijskoj pretpostavci ima topološki poredak
+		\item[4.] stavimo $v$ na početak tog poretka jer nema ulaznih bridova, a svi njegovi izlazni bridovi vode prema kasnijim vrhovima
+	\end{itemize}
+
+	\vspace{0.4em}
+	Obratno, ciklus bi zahtijevao da se njegov početni vrh nalazi prije samoga sebe, što je nemoguće. \hfill $\square$
+\end{frame}
+
+\begin{frame}[fragile]{Malo o Nix jeziku}
+	\begin{lstlisting}[language=nix]
+a: a + 1 # lambda funkcija
+a: b: a + b # lambda funkcija koja vraća lambda funkciju
+{a = 1; b = 1} # atributni skup
+{a, b}: a + b # lambda funkcija koja prima atributni skup
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Malo o Nix jeziku (nastavak)}
+	\begin{lstlisting}[language=nix]
+{pkgs, nazivPosluzitelja, ...}: {
+  networking.hostName = nazivPosluzitelja;
+  services.openssh.enable = true;
+  environment.systemPackages = [ ];
+}
+\end{lstlisting}
+	\begin{itemize}
+		\item \texttt{\{ \ldots \}}: skup atributa, odnosno parova ime--vrijednost
+		\item \verb|"seminar"| je tekst, a \texttt{true} logička vrijednost
+		\item \texttt{[ \ldots ]} je lista; elementi se odvajaju razmacima
+		\item točke označavaju ugniježđene atribute; dodjelu završava \texttt{;}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Primjer derivacije iz Nixpkgs}
+	\demo{pokazati \texttt{src} direktno iz Nixpkgs}
+\end{frame}
+
+\begin{frame}{Determinizam derivacija}
+	\textbf{Što kontroliramo?}
+	\begin{itemize}
+		\item verziju paketa, izvore i ostale ulaze
+		\item platformu za koju gradimo
+		\item okruženje gradnje \textrightarrow{} pješčanik
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Za raspravu}
+	\pitanje{Kada derivacija ne bi bila deterministička?}
+\end{frame}
+
+\section{Praktični primjer}
+
+\begin{frame}[fragile]{Praktični primjer: jednostavni server}
+	\begin{lstlisting}[language=nix]
+{ config, pkgs, ... }:
+
+{
+  # SSH pristup
+  services.openssh.enable = true;
+
+  # Vatrozid propušta samo SSH
+  networking.firewall.allowedTCPPorts = [ 22 ];
+
+  # Osnovni korisnik
+  users.users.server.isNormalUser = true;
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Generacije konfiguracija}
+	\begin{lstlisting}
+generacija 1 → generacija 2 → generacija 3
+konfiguracija 1 → konfiguracija 2 → konfiguracija 3
+\end{lstlisting}
+
+	\demo{demonstracija generacija}
+
+	\begin{itemize}
+		\item nova se konfiguracija prvo izgradi
+		\item prebacivanje profila na novu generaciju je atomično
+		\item stara generacija ostaje dostupna dok je ne uklonimo
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Kako se izgradi sustav}
+	\begin{lstlisting}
+sudo nixos-rebuild switch
+\end{lstlisting}
+
+	\begin{center}
+		\small opis \textrightarrow{} provjera i evaluacija \textrightarrow{} gradnja/preuzimanje \textrightarrow{} aktivacija
+	\end{center}
+
+	{\small
+	\renewcommand{\arraystretch}{1.2}
+	\begin{tabular}{@{}l >{\raggedright\arraybackslash}p{7.0cm}@{}}
+		\toprule
+		\textbf{Naredba \texttt{nixos-rebuild \ldots}} & \textbf{Rezultat}                                       \\
+		\midrule
+		\texttt{build}                                 & Izgradi konfiguraciju, bez aktivacije.                  \\
+		\texttt{test}                                  & Aktivira je, bez postavljanja kao zadane za pokretanje. \\
+		\texttt{boot}                                  & Postavi je za sljedeće pokretanje, bez aktivacije sada. \\
+		\texttt{switch}                                & Aktivira je i postavi za sljedeće pokretanje.           \\
+		\bottomrule
+	\end{tabular}}
+\end{frame}
+
+\begin{frame}[fragile]{Što ako nova konfiguracija ne radi?}
+	\begin{lstlisting}
+sudo nixos-rebuild switch --rollback
+\end{lstlisting}
+
+	\begin{itemize}
+		\item u pokrenutom sustavu možemo se vratiti na prethodnu generaciju
+		\item ako se sustav ne pokreće, biramo sačuvanu generaciju u izborniku za pokretanje
+		\item povrat konfiguracije ne vraća osobne datoteke, no njihov se povrat može riješiti pomoću BTRFS-a
+	\end{itemize}
+
+	\vfill
+	{\scriptsize Izvor: \emph{povrat NixOS konfiguracije} \cite{nixos-manual-rollback}}
+\end{frame}
+
+\begin{frame}{Reproducibilnost}
+	\pitanje{Hoće li konfiguracija generirati isti sustav danas i za mjesec dana?}
+\end{frame}
+
+\begin{frame}{Pahuljice (eng.\ \textit{flake}) spašavaju}
+	\vskip25pt
+	{\small
+		\renewcommand{\arraystretch}{1.3}
+		\begin{tabular}{@{}l >{\raggedright\arraybackslash}p{7.5cm}@{}}
+			\toprule
+			\textbf{Datoteka}          & \textbf{Uloga u projektu s flakes}           \\
+			\midrule
+			\texttt{configuration.nix} & NixOS postavke.                              \\
+			\texttt{flake.nix}         & Deklarira ulaze i izlaze projekta.           \\
+			\texttt{flake.lock}        & Bilježi zaključane revizije i hashove ulaza. \\
+			\bottomrule
+		\end{tabular}}
+
+	\vspace{0.3em}
+	\vskip10pt
+	\begin{itemize}
+		\item za ponavljanje konfiguracije dijelimo i zaključane ulaze
+		\item nadogradnja ulaza je namjerna promjena koju možemo pregledati
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Korist i bez prelaska na NixOS}
+	Primjer datoteke \texttt{shell.nix}:
+	\begin{lstlisting}[language=nix]
+{ pkgs ? import <nixpkgs> { } }:
+pkgs.mkShell {
+  packages = [ pkgs.git pkgs.curl ];
+}
+\end{lstlisting}
+
+	\begin{lstlisting}
+nix-shell
+\end{lstlisting}
+
+	\begin{itemize}
+		\item dobivamo razvojnu ljusku s navedenim alatima
+		\item izlaskom iz ljuske prestajemo koristiti to okruženje
+		\item \texttt{<nixpkgs>} ovdje koristi lokalno odabranu zbirku; primjer \textbf{ne zaključava verzije}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Praktični primjeri}
+	\demo{pokazati nekoliko praktičnih primjera}
+\end{frame}
+
+\begin{frame}{Zašto se Nix/NixOS ipak isplati?}
+	\begin{itemize}
+		\item zajednička konfiguracija za više računala
+		\item sustav otvorenog koda s najširom podrškom i najvećim brojem paketa
+		\item rad s cijelim operacijskim sustavom i paketima bez glavobolja
+		\item čist sustav bez naknadnog smeća ako imate OKP
+		\item praktičan rad s računalom
+		\item lakša suradnja i dijeljenje
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Pitanja i daljnje čitanje}
+	\pitanje{Koji biste dio svojeg računala prvi opisali deklarativno?}
+
+	\begin{itemize}
+		\item {\footnotesize\url{https://nix.dev/}} --- vodiči i primjeri \cite{nixdev}
+		\item {\footnotesize\url{https://nixos.org/manual/nixos/stable/}} --- NixOS priručnik \cite{nixos-manual}
+		\item {\footnotesize\url{https://search.nixos.org/options}} --- pretraživanje NixOS opcija \cite{nixos-search-options}
+		\item {\footnotesize\url{https://search.nixos.org/packages}} --- pretraživanje paketa \cite{nixos-search-packages}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Literatura}
+	\printbibliography[heading=none]
+\end{frame}
+
+\end{document}

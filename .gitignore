@@ -1,0 +1,13 @@
+/_site/
+/.jekyll-cache/
+/.jekyll-metadata
+/.sass-cache/
+
+# Lokalni rezultati praktičnih primjera
+/primjeri/**/result
+/primjeri/**/result-*
+/primjeri/**/target/
+/primjeri/**/__pycache__/
+/primjeri/**/.venv/
+/primjeri/**/.direnv/
+/primjeri/c/hello

@@ -1,0 +1,10 @@
+title: Deklarativni operacijski sustavi
+description: Kratki esej o društvenoj strani deklarativnih operacijskih sustava, prezentacija i izvori za učenje Nixa i NixOS-a.
+lang: hr
+baseurl: /nixos-seminar
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+exclude:
+  - README.md

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="{{ site.lang | default: 'hr' }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ page.title | escape }} | Seminar</title>
+    <meta name="description" content="{{ site.description | escape }}">
+    <link rel="stylesheet" href="{{ '/assets/style.css' | relative_url }}">
+  </head>
+  <body>
+    <a class="skip-link" href="#sadrzaj">Preskoči na sadržaj</a>
+    <header>
+      <nav aria-label="Glavna navigacija">
+        <a href="{{ '/' | relative_url }}" {% if page.url == '/' %}aria-current="page"{% endif %}>Esej</a>
+        <a href="{{ '/prezentacija.pdf' | relative_url }}">Prezentacija</a>
+        <a href="{{ '/' | relative_url }}#izvori">Izvori</a>
+        <a href="{{ '/' | relative_url }}#dodatak">Dodatak</a>
+      </nav>
+    </header>
+    <main id="sadrzaj">
+      <article>{{ content }}</article>
+    </main>
+    <footer>Seminar o deklarativnim operacijskim sustavima</footer>
+  </body>
+</html>
